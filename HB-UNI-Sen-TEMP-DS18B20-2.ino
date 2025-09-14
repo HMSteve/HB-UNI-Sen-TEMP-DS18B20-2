@@ -32,7 +32,6 @@ LiquidCrystal_I2C lcd(LCD_ADDRESS, 20, 4);
 #define MAX_SENSORS       1
 
 #define BAT_VOLT_LOW      11
-#define BAT_VOLT_CRITICAL 10
 
 // Pin config HMSensor board
 #define CONFIG_BUTTON_PIN 8
@@ -68,8 +67,8 @@ using namespace as;
 
 // define all device properties
 const struct DeviceInfo PROGMEM devinfo = {
-  {0xF8, 0x03, 0x06},          // Device ID
-  "SGSENTMP06",               // Device Serial
+  {0xF8, 0x03, 0x02},          // Device ID
+  "SGSENTMP02",               // Device Serial
   {0xF8, 0x03},              // Device Model
   0x10,                       // Firmware Version
   as::DeviceType::THSensor,   // Device Type
@@ -97,7 +96,7 @@ class Hal : public BaseHal {
       battery.init(seconds2ticks(60UL * 60 * 6), CLOCK); //battery measure every 6 hours
       //battery.init(seconds2ticks(20), CLOCK);
       battery.low(BAT_VOLT_LOW);
-      battery.critical(BAT_VOLT_CRITICAL);
+      battery.critical(BAT_VOLT_LOW - 1); //100mV below 
     }
 
     bool runready () {
@@ -268,6 +267,7 @@ class UType : public MultiChannelDevice<Hal, WeatherChannel, MAX_SENSORS, UList0
       DPRINT("LOW BAT Limit: ");
       DDECLN(this->getList0().lowBatLimit());
       this->battery().low(this->getList0().lowBatLimit());
+      this->battery().critical(this->getList0().lowBatLimit() - 1);      
       DPRINT("Sendentervall: "); 
       DDECLN(this->getList0().updIntervall());
       DPRINT("LED Mode: ");
