@@ -67,8 +67,8 @@ using namespace as;
 
 // define all device properties
 const struct DeviceInfo PROGMEM devinfo = {
-  {0xF8, 0x03, 0x02},          // Device ID
-  "SGSENTMP02",               // Device Serial
+  {0xF8, 0x03, 0x06},          // Device ID
+  "SGSENTMP06",               // Device Serial
   {0xF8, 0x03},              // Device Model
   0x10,                       // Firmware Version
   as::DeviceType::THSensor,   // Device Type
