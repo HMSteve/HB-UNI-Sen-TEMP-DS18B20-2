@@ -13,7 +13,7 @@
 #include <LowPower.h>
 #endif
 
-#if defined ARDUINO_ARCH_STM32 
+#if defined ARDUINO_ARCH_STM32
 #include "STM32LowPower.h"
 #endif
 
@@ -104,7 +104,7 @@ class Idle {
 public:
 
   static void waitSerial () {
-//      DPRINT(F("Go sleep - ")); DHEXLN((uint16_t)sysclock.next());
+      // DPRINT(F("Go sleep - ")); DDECLN((uint16_t)sysclock.next());
       Serial.flush();
       while (!(UCSR0A & (1 << UDRE0))) {  // Wait for empty transmit buffer
         UCSR0A |= 1 << TXC0;  // mark transmission not complete
@@ -132,6 +132,9 @@ public:
   static uint32_t doSleep (uint32_t ticks) {
     uint32_t offset = 0;
     period_t sleeptime = SLEEP_FOREVER;
+
+    DPRINT("Sleep ms: ");DDECLN(ticks2millis(ticks));
+    waitSerial ();
 
     if( ticks > seconds2ticks(8) ) { offset = seconds2ticks(8); sleeptime = SLEEP_8S; }
 //    else if( ticks > seconds2ticks(4) )  { offset = seconds2ticks(4);  sleeptime = SLEEP_4S; }
@@ -226,7 +229,7 @@ public:
 
 #endif
 
-#if defined ARDUINO_ARCH_STM32 
+#if defined ARDUINO_ARCH_STM32
 // more time to spend here
 template <bool ENABLETIMER2 = false, bool ENABLEADC = false>
 class Idle {
@@ -252,7 +255,7 @@ public:
     uint32_t sleeptime = 0;
 
     // limit the max sleeptime to 8 seconds
-    if (ticks > seconds2ticks(8)) ticks = seconds2ticks(8); 
+    if (ticks > seconds2ticks(8)) ticks = seconds2ticks(8);
     sleeptime = ticks2millis(ticks);
 
     // ADC_OFF, BOD_OFF, TIMER_OFF
@@ -324,7 +327,7 @@ public:
 
   Activity () : Alarm(0), awake(false) {
     async(true);
-#if defined ARDUINO_ARCH_STM32 
+#if defined ARDUINO_ARCH_STM32
     LowPower.begin();
 #endif
   }
