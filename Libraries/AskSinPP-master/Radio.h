@@ -331,6 +331,7 @@ template <class SPIType, uint8_t GDO0, uint8_t PWRPIN = 0xff, int SENDDELAY = 10
 class Radio : public HWRADIO {
 
   static void isr () {
+    DPRINTLN("GDO0 int. triggered");
     instance().handleInt();
   }
 
@@ -399,7 +400,7 @@ public:
   void unsetState(States s) { state &= ~s; }
 
 public:   //---------------------------------------------------------------------------------------------------------
-  Radio () : state(ALIVE) 
+  Radio () : state(ALIVE)
 
     {}
 
@@ -472,6 +473,7 @@ public:   //--------------------------------------------------------------------
   }
 
 void enable () {
+    DPRINTLN("enable GDO0 int.");
 #ifdef EnableInterrupt_h
   if( digitalPinToInterrupt(GDO0) == NOT_AN_INTERRUPT )
 	// interruptMode() muss in der jeweiligen Radioklasse implementiert werden und 0 = FALLING oder 1 = RISING zurückgeben.
@@ -480,7 +482,9 @@ void enable () {
 #endif
         attachInterrupt(digitalPinToInterrupt(GDO0), isr, HWRADIO::interruptMode() == 0 ? FALLING : RISING);
 }
+
 void disable () {
+  DPRINTLN("disable GDO0 int.");
 #ifdef EnableInterrupt_h
   if( digitalPinToInterrupt(GDO0) == NOT_AN_INTERRUPT )
     disableInterrupt(GDO0);
@@ -543,6 +547,7 @@ void disable () {
     this->wakeup();
     disable();
     setState(SENDING);
+    DPRINTLN("call sndData");
     uint8_t result = HWRADIO::sndData(buf,size,burst);
     unsetState(SENDING);
     enable();
